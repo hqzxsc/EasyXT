@@ -105,11 +105,9 @@ class UnifiedDuckDBManager:
             # 创建连接（使用shared模式避免锁定）
             # 尝试多种连接方式
             connection_attempts = [
-                # 方式1: 读模式（允许多个读者）
-                lambda: duckdb.connect(str(self.db_path), read_only=True),
-                # 方式2: 独占模式
+                # 方式1: 读写模式（正常使用）
                 lambda: duckdb.connect(str(self.db_path), read_only=False),
-                # 方式3: 内存模式（如果文件被锁）
+                # 方式2: 内存模式（文件被锁或路径不可写时的兜底）
                 lambda: duckdb.connect(':memory:'),
             ]
 
