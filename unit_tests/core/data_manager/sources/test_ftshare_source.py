@@ -53,7 +53,7 @@ def test_get_price_maps_easyxt_arguments_to_ftshare():
     assert params["symbol"] == "000001.SZ"
     assert params["interval_value"] == 5
     assert params["adjust_kind"] == "forward"
-    assert list(frame[["open", "close", "volume"]].iloc[0]) == [10, 10.5, 1000]
+    assert list(frame[["open", "close", "volume"]].iloc[0]) == [10, 10.5, 10]
 
 
 def test_daily_price_is_split_into_twelve_month_chunks():

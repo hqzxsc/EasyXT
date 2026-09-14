@@ -15,7 +15,8 @@ EasyXT 学习实例 24：FTShare 免费数据源详细教程
     在项目根目录 .env.local 中配置：
     FTSHARE_API_KEY=你的API_KEY
     FTSHARE_ENABLED=true
-    EASYXT_FTSHARE_ENABLED=true
+    # 免费套餐保持 false；有实时快照权限时再开启
+    EASYXT_FTSHARE_ENABLED=false
 
 安全提示：不要把 API Key 写进本文件、提交到 Git 或发送到聊天中。
 """
@@ -72,8 +73,8 @@ def lesson_02_free_catalog() -> None:
 
 
 def lesson_03_realtime_quotes() -> None:
-    """免费实时数据是HTTP快照，不是Tick推送或历史分钟K。"""
-    title("第3课：获取免费实时行情快照")
+    """实时快照需要相应套餐权限，且不是Tick推送。"""
+    title("第3课：获取实时行情快照（需要相应套餐权限）")
     from easy_xt.realtime_data.providers.ftshare_provider import FTShareDataProvider
 
     provider = FTShareDataProvider({"timeout": 15, "batch_size": 200})
@@ -163,11 +164,11 @@ def lesson_06_call_by_chinese_name() -> None:
 
 def lesson_07_plan_boundaries() -> None:
     title("第7课：套餐和数据边界")
-    print("免费版：日/周/月/年K、实时行情快照、财务、资金流、行业、基金、宏观等。")
+    print("免费版：日/周/月/年K、财务、资金流、行业、基金、宏观等；实测实时快照无权限。")
     print("基础版：股票/ETF/指数历史分钟K、批量K线、公告研报等。")
     print("专业版：股票/ETF/指数实时分钟K和实时日K。")
     print("大QMT桥接：Tick、五档和低延迟交易行情，仍应作为实盘首选。")
-    print("FTShare免费快照：适合跨平台看盘、全市场扫描和基本面补充。")
+    print("FTShare快照：有相应套餐权限时适合跨平台看盘；免费版重点用于历史与基本面补充。")
 
 
 def main() -> int:

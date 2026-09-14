@@ -28,6 +28,9 @@ class DataManagerConfig:
         'tushare_token_2': None,  # 备用token（限流时自动切换）
         'qmt_path': None,
         'baostock_enabled': True,
+        'ftshare_api_key': None,
+        'ftshare_enabled': True,
+        'ftshare_base_url': None,
         # 数据源优先级（改为智能模式，优先使用本地可用数据源）
         'preferred_sources': None,  # None = 自动检测可用数据源
         'cache_enabled': True,
@@ -37,6 +40,7 @@ class DataManagerConfig:
         'max_retries': 3,
         'baostock_timeout': 15,
         'baostock_max_retries': 1,
+        'ftshare_timeout': 15,
         # 新增：新手模式（默认False，优先QMT/Tushare）
         'beginner_mode': False,
     }
@@ -70,6 +74,8 @@ class DataManagerConfig:
 
             # 尝试多个可能的.env文件位置
             possible_paths = [
+                Path.cwd() / '.env.local',
+                Path(__file__).parent.parent.parent / '.env.local',
                 Path.cwd() / '.env',  # 当前工作目录
                 Path(__file__).parent.parent.parent / '.env',  # 项目根目录
                 Path.home() / '.env',  # 用户主目录
@@ -131,6 +137,13 @@ class DataManagerConfig:
         if 'BAOSTOCK_ENABLED' in os.environ:
             self.config['baostock_enabled'] = os.environ['BAOSTOCK_ENABLED'].lower() in ('true', '1', 'yes')
 
+        if 'FTSHARE_API_KEY' in os.environ:
+            self.config['ftshare_api_key'] = os.environ['FTSHARE_API_KEY']
+        if 'FTSHARE_ENABLED' in os.environ:
+            self.config['ftshare_enabled'] = os.environ['FTSHARE_ENABLED'].lower() in ('true', '1', 'yes')
+        if 'FTSHARE_BASE_URL' in os.environ:
+            self.config['ftshare_base_url'] = os.environ['FTSHARE_BASE_URL'] or None
+
         # 日志级别
         if 'LOG_LEVEL' in os.environ:
             self.config['log_level'] = os.environ['LOG_LEVEL']
@@ -167,6 +180,14 @@ class DataManagerConfig:
         # 3. 检测Tushare（如果有token）
         if self.config.get('tushare_token'):
             available.append('tushare')
+
+        if self.config.get('ftshare_enabled', True) and self.config.get('ftshare_api_key'):
+            try:
+                import importlib.util
+                if importlib.util.find_spec('ftshare') is not None:
+                    available.append('ftshare')
+            except (ImportError, ValueError):
+                pass
 
         # BaoStock 无需 Token；仅在依赖已安装且配置开启时启用。
         if self.config.get('baostock_enabled', True):
@@ -207,7 +228,7 @@ class DataManagerConfig:
         获取特定数据源的配置
 
         Args:
-            source_name: 数据源名称 (duckdb/tushare/qmt/baostock)
+            source_name: 数据源名称 (duckdb/tushare/qmt/baostock/ftshare)
 
         Returns:
             Dict: 数据源配置
@@ -230,6 +251,12 @@ class DataManagerConfig:
                 'enabled': self.get('baostock_enabled', True),
                 'timeout': self.get('baostock_timeout', 15),
                 'max_retries': self.get('baostock_max_retries', 1),
+            },
+            'ftshare': {
+                'api_key': self.get('ftshare_api_key'),
+                'enabled': self.get('ftshare_enabled', True),
+                'base_url': self.get('ftshare_base_url'),
+                'timeout': self.get('ftshare_timeout', 15),
             }
         }
 

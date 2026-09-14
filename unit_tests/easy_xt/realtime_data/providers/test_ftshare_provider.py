@@ -29,4 +29,5 @@ def test_ftshare_provider_maps_symbols_and_quote_fields():
     assert quotes[0]["code"] == "000001.SZ"
     assert quotes[0]["price"] == 11.77
     assert quotes[0]["change_pct"] == -0.675
+    assert quotes[0]["volume"] == 1
     assert quotes[0]["source"] == "ftshare"

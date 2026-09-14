@@ -14,6 +14,10 @@ from .providers.base_provider import BaseDataProvider
 from .providers.ths_provider import ThsDataProvider
 from .providers.eastmoney_provider import EastmoneyDataProvider
 try:
+    from .providers.ftshare_provider import FTShareDataProvider
+except ImportError:
+    FTShareDataProvider = None
+try:
     from .providers.big_qmt_bridge_provider import BigQmtBridgeDataProvider
 except ImportError:
     BigQmtBridgeDataProvider = None
@@ -83,6 +87,14 @@ class UnifiedDataAPI:
     def _init_providers(self):
         """初始化数据源提供者"""
         try:
+            if self.config.is_provider_enabled('ftshare'):
+                if FTShareDataProvider is None:
+                    self.logger.warning("FTShare行情源未启用: 请安装 ftshare SDK")
+                else:
+                    ftshare_config = self.config.get_provider_config('ftshare')
+                    self.providers['ftshare'] = FTShareDataProvider(ftshare_config)
+                    self.logger.info("FTShare实时快照Provider初始化成功")
+
             if self.config.is_provider_enabled('big_qmt_bridge'):
                 if BigQmtBridgeDataProvider is None:
                     self.logger.warning("大QMT行情桥接未启用: 请安装 websockets")

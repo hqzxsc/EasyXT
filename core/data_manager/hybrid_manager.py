@@ -11,7 +11,7 @@ from typing import Optional, List, Dict, Union
 from datetime import datetime
 import time
 
-from .sources import BaseDataSource, DuckDBSource, TushareSource, QMTSource, BaoStockSource
+from .sources import BaseDataSource, DuckDBSource, TushareSource, QMTSource, BaoStockSource, FTShareSource
 from .config import DataManagerConfig, get_global_config
 from .utils import (
     normalize_symbol,
@@ -64,6 +64,7 @@ class HybridDataManager:
             'qmt_queries': 0,
             'tushare_queries': 0,
             'baostock_queries': 0,
+            'ftshare_queries': 0,
             'cache_hits': 0,
             'total_queries': 0
         }
@@ -130,6 +131,19 @@ class HybridDataManager:
                         logger.warning("[HybridDataManager] [FAIL] BaoStock数据源连接失败")
             except Exception as e:
                 logger.warning("[HybridDataManager] [FAIL] BaoStock初始化失败: %s", e)
+
+        if 'ftshare' in self.source_priority:
+            try:
+                ftshare_config = self.config.get_source_config('ftshare')
+                if ftshare_config.get('enabled', True) and ftshare_config.get('api_key'):
+                    ftshare_source = FTShareSource(ftshare_config)
+                    if ftshare_source.connect():
+                        self.sources['ftshare'] = ftshare_source
+                        logger.info("[HybridDataManager] [OK] FTShare数据源已连接")
+                    else:
+                        logger.warning("[HybridDataManager] [FAIL] FTShare数据源连接失败")
+            except Exception as e:
+                logger.warning("[HybridDataManager] [FAIL] FTShare初始化失败: %s", e)
 
         logger.info(
             "[HybridDataManager] 数据源初始化完成，可用数据源: %s",

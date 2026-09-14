@@ -51,6 +51,11 @@ class RealtimeDataConfig:
                 "ws_port": 18766,
                 "token": "",
                 "timeout": 10
+            },
+            "ftshare": {
+                "enabled": os.getenv("EASYXT_FTSHARE_ENABLED", "false").lower() in ("true", "1", "yes"),
+                "timeout": 15,
+                "batch_size": 200
             }
         },
         "cache": {

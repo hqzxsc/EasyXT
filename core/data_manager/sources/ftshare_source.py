@@ -143,6 +143,9 @@ class FTShareSource(BaseDataSource):
                         limit=1000,
                     )
                 frame = self._normalize_frame(result, normalized)
+                # FTShare 股票 K 线成交量为“股”，EasyXT stock_daily 统一使用“手”。
+                if "volume" in frame.columns:
+                    frame["volume"] = frame["volume"] / 100.0
                 if not frame.empty:
                     chunks.append(frame)
                 cursor = chunk_end + pd.Timedelta(days=1)

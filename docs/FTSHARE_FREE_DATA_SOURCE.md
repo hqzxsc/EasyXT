@@ -9,7 +9,8 @@ EasyXT 已保存官方免费版 160 项接口清单，并接入历史数据层�
 ```env
 FTSHARE_API_KEY=你的密钥
 FTSHARE_ENABLED=true
-EASYXT_FTSHARE_ENABLED=true
+# 免费套餐保持 false；有实时快照权限时再改为 true
+EASYXT_FTSHARE_ENABLED=false
 ```
 
 ## 查询和调用免费接口
@@ -32,7 +33,7 @@ df = source.call_free(
 清单文件为 `config/ftshare_free_endpoints.json`，每项包含中文名称、SDK 方法、
 接口路径、参数和官方文档链接。`call_ftshare_free` 只允许调用这份免费清单中的方法。
 
-## 统一行情 API
+## 统一行情 API（需要相应实时快照权限）
 
 ```python
 from easy_xt.realtime_data.unified_api import UnifiedDataAPI
@@ -45,5 +46,5 @@ quotes = api.get_realtime_quotes(
 )
 ```
 
-FTShare 免费行情是 HTTP 实时快照轮询，不是 Tick 推送。大QMT桥接优先级仍高于
-FTShare；FTShare 默认作为跨平台实时快照与基本面字段补充源。
+Windows 免费套餐在线实测实时快照返回 HTTP 403。Provider 采用 HTTP 快照轮询，
+不是 Tick 推送；仅在账户具备相应权限时开启。大QMT桥接仍应作为实盘首选。

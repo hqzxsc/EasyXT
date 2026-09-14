@@ -89,7 +89,8 @@ class FTShareDataProvider(BaseDataProvider):
                     "price": price,
                     "change": change,
                     "change_pct": change_rate * 100,
-                    "volume": int(row.get("volume") or 0),
+                    # FTShare 返回股数；EasyXT 实时行情统一为手。
+                    "volume": float(row.get("volume") or 0) / 100.0,
                     "turnover": float(row.get("turnover") or 0),
                     "timestamp": float(row.get("ts_millis") or time.time() * 1000) / 1000,
                     "source": "ftshare",
